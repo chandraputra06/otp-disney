@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Domain;
-use App\Http\Requests\StoreDomainRequest;
-use App\Http\Requests\UpdateDomainRequest;
+use App\Models\GmailToken;
+use App\Http\Requests\StoreGmailTokenRequest;
+use App\Http\Requests\UpdateGmailTokenRequest;
 
-class DomainController extends Controller
+class GmailTokenController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -27,7 +27,7 @@ class DomainController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreDomainRequest $request)
+    public function store(StoreGmailTokenRequest $request)
     {
         //
     }
@@ -35,7 +35,7 @@ class DomainController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Domain $domain)
+    public function show(GmailToken $gmailToken)
     {
         //
     }
@@ -43,7 +43,7 @@ class DomainController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Domain $domain)
+    public function edit(GmailToken $gmailToken)
     {
         //
     }
@@ -51,7 +51,7 @@ class DomainController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateDomainRequest $request, Domain $domain)
+    public function update(UpdateGmailTokenRequest $request, GmailToken $gmailToken)
     {
         //
     }
@@ -59,7 +59,7 @@ class DomainController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Domain $domain)
+    public function destroy(GmailToken $gmailToken)
     {
         //
     }

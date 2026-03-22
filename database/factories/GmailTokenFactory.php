@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\Domain;
+use App\Models\GmailToken;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<Domain>
+ * @extends Factory<GmailToken>
  */
-class DomainFactory extends Factory
+class GmailTokenFactory extends Factory
 {
     /**
      * Define the model's default state.

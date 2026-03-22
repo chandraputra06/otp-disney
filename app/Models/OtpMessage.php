@@ -5,25 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Email extends Model
+class OtpMessage extends Model
 {
     protected $fillable = [
-        'mailbox_id',
+        'otp_account_id',
         'message_id',
-        'sender_name',
         'sender_email',
         'subject',
-        'body_text',
-        'body_html',
+        'email_snippet',
+        'otp_code',
+        'fetched_status',
         'received_at',
+        'raw_payload',
     ];
 
     protected $casts = [
         'received_at' => 'datetime',
     ];
 
-    public function mailbox(): BelongsTo
+    public function otpAccount(): BelongsTo
     {
-        return $this->belongsTo(Mailbox::class);
+        return $this->belongsTo(OtpAccount::class);
     }
 }

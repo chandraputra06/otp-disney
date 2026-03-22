@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\Email;
+use App\Models\OtpMessage;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<Email>
+ * @extends Factory<OtpMessage>
  */
-class EmailFactory extends Factory
+class OtpMessageFactory extends Factory
 {
     /**
      * Define the model's default state.
