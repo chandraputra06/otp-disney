@@ -40,7 +40,7 @@
                                     id="phone_number"
                                     name="phone_number"
                                     value="{{ old('phone_number', $result['phone_number'] ?? '') }}"
-                                    placeholder="Contoh: 0895637875901"
+                                    placeholder="Contoh: 0886529367891"
                                     class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3.5 text-sm text-gray-900 outline-none ring-0 transition placeholder:text-gray-400 focus:border-[#7b1e1e] focus:shadow-[0_0_0_4px_rgba(123,30,30,0.10)]"
                                 >
                             </div>
