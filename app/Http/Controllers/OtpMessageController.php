@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Mailbox;
-use App\Http\Requests\StoreMailboxRequest;
-use App\Http\Requests\UpdateMailboxRequest;
+use App\Models\OtpMessage;
+use App\Http\Requests\StoreOtpMessageRequest;
+use App\Http\Requests\UpdateOtpMessageRequest;
 
-class MailboxController extends Controller
+class OtpMessageController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -27,7 +27,7 @@ class MailboxController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreMailboxRequest $request)
+    public function store(StoreOtpMessageRequest $request)
     {
         //
     }
@@ -35,7 +35,7 @@ class MailboxController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Mailbox $mailbox)
+    public function show(OtpMessage $otpMessage)
     {
         //
     }
@@ -43,7 +43,7 @@ class MailboxController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Mailbox $mailbox)
+    public function edit(OtpMessage $otpMessage)
     {
         //
     }
@@ -51,7 +51,7 @@ class MailboxController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateMailboxRequest $request, Mailbox $mailbox)
+    public function update(UpdateOtpMessageRequest $request, OtpMessage $otpMessage)
     {
         //
     }
@@ -59,7 +59,7 @@ class MailboxController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Mailbox $mailbox)
+    public function destroy(OtpMessage $otpMessage)
     {
         //
     }

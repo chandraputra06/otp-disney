@@ -22,6 +22,8 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        $this->call([DomainSeeder::class]);
+        $this->call([
+            OtpAccountSeeder::class,
+        ]);
     }
 }
