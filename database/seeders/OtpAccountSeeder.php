@@ -11,15 +11,21 @@ class OtpAccountSeeder extends Seeder
     {
         $accounts = [
             [
-                'phone_number' => '0895637875901',
+                'phone_number' => '895637875901',
                 'gmail_address' => 'hayrika.am@gmail.com',
                 'account_name' => 'Disney Account 1',
                 'is_active' => true,
             ],
             [
-                'phone_number' => '085813608728',
+                'phone_number' => '85813608728',
                 'gmail_address' => 'hallo.unimo@gmail.com',
                 'account_name' => 'Disney Account 2',
+                'is_active' => true,
+            ],
+            [
+                'phone_number' => '85890022056',
+                'gmail_address' => 'luvvp1ecy@gmail.com',
+                'account_name' => 'Disney Account 3',
                 'is_active' => true,
             ],
         ];
