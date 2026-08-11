@@ -102,7 +102,7 @@ class OtpFetchService
                 'otp_code' => $otpCode,
                 'fetched_status' => $otpCode ? 'success' : 'parse_failed',
                 'received_at' => $receivedAtCarbon,
-                'raw_payload' => json_encode($message['payload'] ?? null),
+                'raw_payload' => json_encode(['subject' => $message['subject'] ?? null, 'snippet' => $message['snippet'] ?? null]),
             ]);
 
             if (!$otpCode) {

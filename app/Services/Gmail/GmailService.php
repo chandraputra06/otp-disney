@@ -15,6 +15,15 @@ class GmailService
     {
         $client = new GoogleClient();
 
+        // === FIX 1: batasi waktu tiap panggilan HTTP ke Google ===
+        // Ini yang mencegah request menggantung 200-1000 detik & menahan
+        // proses sampai 120. Menyetel http client sendiri juga membuat
+        // library TIDAK mengulang otomatis dengan backoff -> gagal cepat.
+        $client->setHttpClient(new \GuzzleHttp\Client([
+            'connect_timeout' => 5,   // maks 5 detik untuk menyambung
+            'timeout'         => 10,  // maks 10 detik per panggilan
+        ]));
+
         $client->setClientId(config('services.google.client_id'));
         $client->setClientSecret(config('services.google.client_secret'));
         $client->setRedirectUri(config('services.google.redirect_uri'));
@@ -172,7 +181,7 @@ class GmailService
         $query = 'newer_than:2d (Disney OR "Disney+" OR kode OR verifikasi OR OTP)';
 
         $messagesResponse = $service->users_messages->listUsersMessages('me', [
-            'maxResults' => 10,
+            'maxResults' => 5,   // === FIX 2: dari 10 -> 5, memangkas worst-case panggilan ===
             'q' => $query,
         ]);
 

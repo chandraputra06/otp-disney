@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\FetchOtpRequest;
 use App\Services\Otp\OtpFetchService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 
 class OtpController extends Controller
 {
@@ -25,5 +26,15 @@ class OtpController extends Controller
         );
 
         return view('otp.index', compact('result'));
+    }
+
+    // === BARU: kembalikan JSON untuk dikonsumsi AJAX ===
+    public function fetchJson(FetchOtpRequest $request): JsonResponse
+    {
+        $result = $this->otpFetchService->fetchByPhoneNumber(
+            $request->validated('phone_number')
+        );
+
+        return response()->json($result);
     }
 }

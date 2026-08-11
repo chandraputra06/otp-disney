@@ -1,364 +1,216 @@
 @extends('layouts.app')
 
 @section('content')
-    <main class="min-h-screen bg-[linear-gradient(180deg,_#fff7f7_0%,_#f8f4f4_100%)] px-4 py-10">
-        <div class="mx-auto max-w-5xl">
-            <div class="mb-8 text-center">
-                <div class="mx-auto mb-4 inline-flex items-center gap-2 rounded-full border border-[#7b1e1e]/15 bg-white px-4 py-2 text-xs font-medium text-[#7b1e1e] shadow-sm">
-                    <span class="h-2 w-2 rounded-full bg-[#7b1e1e]"></span>
-                    Disney OTP Fetcher
-                </div>
+<style>
+    #otp-app { min-height: 100vh; background: linear-gradient(180deg,#fff7f7 0%,#f8f4f4 100%); padding: 32px 16px; font-family: ui-sans-serif,system-ui,sans-serif; }
+    .otp-container { max-width: 460px; margin: 0 auto; }
+    .otp-head { text-align: center; margin-bottom: 22px; }
+    .otp-pill { display:inline-flex; align-items:center; gap:6px; background:#fff; color:#7b1e1e; font-size:12px; font-weight:600; padding:6px 12px; border-radius:999px; box-shadow:0 1px 3px rgba(0,0,0,.06); }
+    .otp-pill span { width:7px; height:7px; border-radius:50%; background:#7b1e1e; }
+    .otp-head h1 { font-size:24px; font-weight:700; color:#1f2937; margin:14px 0 4px; }
+    .otp-head p { font-size:13px; color:#6b7280; margin:0; }
+    .otp-card { background:#fff; border-radius:20px; padding:18px; box-shadow:0 10px 40px rgba(0,0,0,.06); }
+    .otp-label { font-size:12px; color:#9ca3af; margin:0 0 6px; }
+    .otp-inrow { display:flex; gap:8px; }
+    .otp-input { flex:1; border:1px solid #e5e7eb; border-radius:12px; padding:12px 14px; font-size:15px; color:#111827; outline:none; transition:.15s; }
+    .otp-input:focus { border-color:#7b1e1e; box-shadow:0 0 0 4px rgba(123,30,30,.1); }
+    .otp-btn { background:#7b1e1e; color:#fff; border:none; font-size:14px; font-weight:600; padding:0 18px; border-radius:12px; cursor:pointer; white-space:nowrap; transition:.15s; display:inline-flex; align-items:center; gap:8px; }
+    .otp-btn:hover { background:#651818; }
+    .otp-btn:disabled { opacity:.65; cursor:not-allowed; }
+    .otp-err { color:#dc2626; font-size:13px; margin:10px 0 0; display:none; }
+    .otp-result { margin-top:16px; }
+    .otp-panel { background:#fff; border-radius:20px; padding:18px; box-shadow:0 10px 40px rgba(0,0,0,.06); }
+    .otp-toprow { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+    .otp-chip { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; padding:5px 12px; border-radius:999px; }
+    .otp-fresh { display:inline-flex; align-items:center; gap:6px; font-size:12px; color:#6b7280; }
+    .otp-fresh i { color:#1d9e75; font-size:9px; }
+    .otp-codebox { width:100%; background:#fbf4f3; border:1px solid #e7cfca; border-radius:16px; padding:22px 16px; text-align:center; cursor:pointer; transition:transform .1s; }
+    .otp-codebox:active { transform:scale(.98); }
+    .otp-codebox .cap { font-size:11px; letter-spacing:2px; color:#a98a85; margin:0 0 8px; }
+    .otp-codebox .code { font-size:46px; font-weight:700; letter-spacing:8px; color:#7b1e1e; margin:0; font-variant-numeric:tabular-nums; }
+    .otp-codebox .hint { display:inline-flex; align-items:center; gap:5px; font-size:12px; color:#7b1e1e; margin-top:10px; }
+    .otp-timerow { display:flex; align-items:center; justify-content:space-between; margin-top:14px; padding:11px 13px; background:#f9fafb; border-radius:12px; }
+    .otp-timerow .lbl { font-size:12px; color:#6b7280; }
+    .otp-timerow .val { font-size:13px; font-weight:600; color:#111827; }
+    .otp-msg { font-size:13px; color:#4b5563; margin:12px 2px 0; }
+    .otp-refreshrow { display:flex; align-items:center; gap:10px; margin-top:14px; }
+    .otp-bar-track { flex:1; height:6px; background:#f1e7e5; border-radius:999px; overflow:hidden; }
+    .otp-bar { height:100%; width:100%; background:#7b1e1e; border-radius:999px; transition:width 1s linear; }
+    .otp-count { font-size:12px; color:#6b7280; min-width:82px; text-align:right; }
+    .otp-toggle { width:36px; height:36px; border-radius:50%; border:1px solid #e5e7eb; background:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#374151; }
+    .otp-empty { text-align:center; padding:44px 20px; background:#fff; border:1px dashed rgba(123,30,30,.2); border-radius:20px; }
+    .otp-empty .ic { width:56px; height:56px; border-radius:16px; background:rgba(123,30,30,.08); color:#7b1e1e; display:flex; align-items:center; justify-content:center; margin:0 auto 14px; font-size:22px; }
+    .otp-empty h3 { font-size:16px; font-weight:600; color:#1f2937; margin:0 0 6px; }
+    .otp-empty p { font-size:13px; color:#6b7280; margin:0; }
+    .otp-toast { position:fixed; left:50%; bottom:28px; transform:translateX(-50%) translateY(10px); background:#111827; color:#fff; font-size:13px; font-weight:600; padding:10px 18px; border-radius:999px; opacity:0; pointer-events:none; transition:.2s; display:inline-flex; align-items:center; gap:7px; }
+    .otp-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+    .spin { animation:otpspin 1s linear infinite; }
+    @keyframes otpspin { to { transform:rotate(360deg); } }
+</style>
 
-                <h1 class="text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">
-                    Cek OTP Disney Orinimo
-                </h1>
-                <p class="mx-auto mt-3 max-w-2xl text-sm leading-6 text-gray-500 md:text-base">
-                    Masukkan nomor handphone untuk mengambil OTP terbaru secara otomatis.
-                </p>
+<main id="otp-app">
+    <div class="otp-container">
+        <div class="otp-head">
+            <span class="otp-pill"><span></span>Disney OTP · Orinimo</span>
+            <h1>Cek OTP Disney</h1>
+            <p>Masukkan nomor handphone untuk mengambil OTP terbaru.</p>
+        </div>
+
+        <div class="otp-card">
+            <p class="otp-label">Nomor handphone</p>
+            <div class="otp-inrow">
+                <input id="otp-phone" class="otp-input" type="text" inputmode="numeric"
+                       value="{{ $result['phone_number'] ?? '' }}" placeholder="Contoh: 886529367891">
+                <button id="otp-submit" class="otp-btn">
+                    <i id="otp-submit-ic" class="fa-solid fa-magnifying-glass"></i>
+                    <span id="otp-submit-tx">Ambil OTP</span>
+                </button>
             </div>
+            <p id="otp-error" class="otp-err"></p>
+        </div>
 
-            <div class="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-                <section class="rounded-3xl border border-white/70 bg-white/90 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.08)] backdrop-blur md:p-8">
-                    <div class="mb-6">
-                        <h2 class="text-lg font-semibold text-gray-900">Pencarian OTP</h2>
-                        <p class="mt-1 text-sm text-gray-500">
-                            Gunakan nomor yang sudah terdaftar pada sistem.
-                        </p>
-                    </div>
-
-                    <form id="otp-fetch-form" action="{{ route('otp.fetch') }}" method="POST" class="space-y-5">
-                        @csrf
-
-                        <div>
-                            <label for="phone_number" class="mb-2 block text-sm font-medium text-gray-700">
-                                Nomor Handphone
-                            </label>
-
-                            <div class="relative">
-                                <input
-                                    type="text"
-                                    id="phone_number"
-                                    name="phone_number"
-                                    value="{{ old('phone_number', $result['phone_number'] ?? '') }}"
-                                    placeholder="Contoh: 886529367891"
-                                    class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3.5 text-sm text-gray-900 outline-none ring-0 transition placeholder:text-gray-400 focus:border-[#7b1e1e] focus:shadow-[0_0_0_4px_rgba(123,30,30,0.10)]"
-                                >
-                            </div>
-
-                            @error('phone_number')
-                                <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                            <button
-                                id="submit-button"
-                                type="submit"
-                                class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-[#7b1e1e] px-4 py-3.5 text-sm font-semibold text-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-[#651818] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-70"
-                            >
-                                <svg id="submit-spinner" class="hidden h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity="0.25" stroke-width="4"></circle>
-                                    <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" stroke-width="4" stroke-linecap="round"></path>
-                                </svg>
-                                <span id="submit-button-text">Ambil OTP</span>
-                            </button>
-
-                            <a
-                                href="{{ route('otp.index') }}"
-                                class="inline-flex w-full cursor-pointer items-center justify-center rounded-2xl border border-gray-200 bg-white px-4 py-3.5 text-sm font-semibold text-gray-700 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-[#7b1e1e]/20 hover:bg-gray-50 hover:text-[#7b1e1e] hover:shadow-md"
-                            >
-                                Reset
-                            </a>
-                        </div>
-                    </form>
-
-                    <div class="mt-6 grid gap-3 sm:grid-cols-3">
-                        <div class="rounded-2xl border border-[#7b1e1e]/10 bg-[#7b1e1e]/[0.03] p-4">
-                            <p class="text-xs font-medium uppercase tracking-wide text-gray-500">Fast Check</p>
-                            <p class="mt-2 text-sm font-semibold text-gray-900">Refresh cepat untuk OTP terbaru</p>
-                        </div>
-
-                        <div class="rounded-2xl border border-[#7b1e1e]/10 bg-[#7b1e1e]/[0.03] p-4">
-                            <p class="text-xs font-medium uppercase tracking-wide text-gray-500">Auto Refresh</p>
-                            <p class="mt-2 text-sm font-semibold text-gray-900">Update otomatis tiap 10 detik</p>
-                        </div>
-
-                        <div class="rounded-2xl border border-[#7b1e1e]/10 bg-[#7b1e1e]/[0.03] p-4">
-                            <p class="text-xs font-medium uppercase tracking-wide text-gray-500">Secure Flow</p>
-                            <p class="mt-2 text-sm font-semibold text-gray-900">Input hanya berdasarkan nomor HP</p>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="rounded-3xl border border-white/70 bg-white/90 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.08)] backdrop-blur md:p-8">
-                    <div class="mb-5 flex items-start justify-between gap-3">
-                        <div>
-                            <h2 class="text-lg font-semibold text-gray-900">Hasil OTP</h2>
-                            <p id="auto-refresh-status" class="mt-1 text-sm text-gray-500">
-                                @isset($result)
-                                    Auto refresh aktif
-                                @else
-                                    Belum ada pencarian OTP
-                                @endisset
-                            </p>
-                        </div>
-
-                        @isset($result)
-                            <div class="flex flex-wrap items-center gap-3">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-xs font-semibold text-gray-600">Auto Refresh</span>
-
-                                    <button
-                                        type="button"
-                                        id="toggle-auto-refresh"
-                                        aria-pressed="true"
-                                        class="relative inline-flex h-10 w-[90px] cursor-pointer items-center rounded-full px-1 shadow-sm transition-all duration-300"
-                                        style="background-color: #7b1e1e;"
-                                    >
-                                        <span
-                                            id="toggle-on-text"
-                                            class="absolute left-4 z-10 text-[11px] font-bold tracking-wide text-white transition-all duration-300"
-                                        >
-                                            ON
-                                        </span>
-
-                                        <span
-                                            id="toggle-off-text"
-                                            class="absolute right-3 z-10 text-[11px] font-bold tracking-wide text-white/70 transition-all duration-300"
-                                        >
-                                            OFF
-                                        </span>
-
-                                        <span
-                                            id="toggle-knob"
-                                            class="absolute left-1 top-1 z-20 h-8 w-8 rounded-full bg-white shadow-md transition-all duration-300"
-                                        ></span>
-                                    </button>
-                                </div>
-
-                                <form id="manual-refresh-form" action="{{ route('otp.fetch') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="phone_number" value="{{ $result['phone_number'] ?? '' }}">
-                                    <button
-                                        type="submit"
-                                        class="group inline-flex cursor-pointer items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-xs font-semibold text-gray-700 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-[#7b1e1e]/20 hover:bg-[#7b1e1e] hover:text-white hover:shadow-md"
-                                    >
-                                        <i class="fa-solid fa-rotate-right text-[13px] transition duration-300 group-hover:rotate-180"></i>
-                                        Refresh
-                                    </button>
-                                </form>
-                            </div>
-                        @endisset
-                    </div>
-
-                    @isset($result)
-                        <div class="mb-5 flex items-center justify-between gap-3 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3">
-                            <div>
-                                <p class="text-xs font-medium uppercase tracking-wide text-gray-500">Nomor HP</p>
-                                <p class="mt-1 text-sm font-semibold text-gray-900">{{ $result['phone_number'] ?? '-' }}</p>
-                            </div>
-
-                            <span class="rounded-full px-3 py-1.5 text-xs font-semibold
-                                @if (($result['status'] ?? '') === 'success')
-                                    bg-green-100 text-green-700
-                                @elseif (($result['status'] ?? '') === 'not_found')
-                                    bg-yellow-100 text-yellow-700
-                                @elseif (($result['status'] ?? '') === 'parse_failed')
-                                    bg-orange-100 text-orange-700
-                                @elseif (($result['status'] ?? '') === 'cooldown')
-                                    bg-blue-100 text-blue-700
-                                @else
-                                    bg-red-100 text-red-700
-                                @endif
-                            ">
-                                {{ $result['status_label'] ?? '-' }}
-                            </span>
-                        </div>
-
-                        <div class="rounded-[28px] border border-[#7b1e1e]/10 bg-white p-7 text-center shadow-[0_12px_40px_rgba(123,30,30,0.08)]">
-                            <p class="text-sm font-medium uppercase tracking-[0.2em] text-gray-400">Kode OTP</p>
-                            <p class="mt-4 text-5xl font-bold tracking-[0.28em] text-[#7b1e1e] md:text-6xl">
-                                {{ $result['otp_code'] ?? '—' }}
-                            </p>
-                        </div>
-
-                        <div class="mt-5 space-y-3 rounded-2xl border border-gray-100 bg-white p-4">
-                            <div>
-                                <p class="text-xs font-medium uppercase tracking-wide text-gray-500">Status Message</p>
-                                <p class="mt-1 text-sm text-gray-800">{{ $result['message'] ?? '-' }}</p>
-                            </div>
-
-                            <div>
-                                <p class="text-xs font-medium uppercase tracking-wide text-gray-500">Waktu Diterima</p>
-                                <p class="mt-1 text-sm text-gray-800">{{ $result['received_at'] ?? '-' }}</p>
-                            </div>
-                        </div>
-
-                        @if (!empty($result['last_otp_code']))
-                            <div class="mt-5 rounded-2xl border border-blue-200 bg-blue-50 p-4">
-                                <p class="text-sm font-semibold text-blue-900">OTP terakhir tersimpan</p>
-                                <p class="mt-2 text-3xl font-bold tracking-[0.2em] text-blue-900">
-                                    {{ $result['last_otp_code'] }}
-                                </p>
-                                <p class="mt-2 text-sm text-blue-700">
-                                    Waktu: {{ $result['last_received_at'] ?? '-' }}
-                                </p>
-                            </div>
-                        @endif
-
-                        <form
-                            id="auto-refresh-form"
-                            action="{{ route('otp.fetch') }}"
-                            method="POST"
-                            class="hidden"
-                        >
-                            @csrf
-                            <input type="hidden" name="phone_number" value="{{ $result['phone_number'] ?? '' }}">
-                        </form>
-                    @else
-                        <div class="flex min-h-[320px] flex-col items-center justify-center rounded-3xl border border-dashed border-[#7b1e1e]/15 bg-white px-6 text-center shadow-[0_12px_30px_rgba(0,0,0,0.03)]">
-                            <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#7b1e1e]/10 text-[#7b1e1e]">
-                                <svg viewBox="0 0 24 24" class="h-8 w-8 fill-none" stroke="currentColor" stroke-width="1.8">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 4l9 6.5v9A1.5 1.5 0 0 1 19.5 21h-15A1.5 1.5 0 0 1 3 19.5v-9Z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 12.5h8M8 16h5"/>
-                                </svg>
-                            </div>
-
-                            <h3 class="text-lg font-semibold text-gray-900">Belum ada hasil OTP</h3>
-                            <p class="mt-2 max-w-sm text-sm leading-6 text-gray-500">
-                                Masukkan nomor handphone terlebih dahulu untuk mulai mengambil OTP terbaru.
-                            </p>
-                        </div>
-                    @endisset
-                </section>
+        <div id="otp-result" class="otp-result">
+            <div class="otp-empty">
+                <div class="ic"><i class="fa-solid fa-shield-halved"></i></div>
+                <h3>Belum ada hasil OTP</h3>
+                <p>Masukkan nomor handphone lalu tekan Ambil OTP.</p>
             </div>
         </div>
-    </main>
+    </div>
+    <div id="otp-toast" class="otp-toast"><i class="fa-solid fa-check"></i> Kode tersalin</div>
+</main>
 
-    <script>
-        (() => {
-            const mainForm = document.getElementById('otp-fetch-form');
-            const submitButton = document.getElementById('submit-button');
-            const submitButtonText = document.getElementById('submit-button-text');
-            const submitSpinner = document.getElementById('submit-spinner');
-            const manualRefreshForm = document.getElementById('manual-refresh-form');
+<script>window.__OTP__ = { url: "{{ route('otp.fetch.json') }}", initial: @json($result ?? null) };</script>
+<script>
+(() => {
+    const cfg = window.__OTP__;
+    const csrf = document.querySelector('meta[name="csrf-token"]').content;
+    const phoneEl = document.getElementById('otp-phone');
+    const submit = document.getElementById('otp-submit');
+    const submitIc = document.getElementById('otp-submit-ic');
+    const submitTx = document.getElementById('otp-submit-tx');
+    const errEl = document.getElementById('otp-error');
+    const resultEl = document.getElementById('otp-result');
+    const toast = document.getElementById('otp-toast');
 
-            const setLoadingState = (isLoading = true) => {
-                if (!submitButton || !submitButtonText || !submitSpinner) return;
+    const REFRESH_SECS = 10;
+    let timer = null, secs = REFRESH_SECS, running = true, lastPhone = '';
 
-                submitButton.disabled = isLoading;
-                submitSpinner.classList.toggle('hidden', !isLoading);
-                submitButtonText.textContent = isLoading ? 'Memproses...' : 'Ambil OTP';
-            };
+    const chipStyle = (status) => {
+        if (status === 'success')  return ['#dcfce7', '#15803d', 'fa-circle-check', 'Berhasil'];
+        if (status === 'cooldown') return ['#dbeafe', '#1d4ed8', 'fa-clock', 'Tunggu Sebentar'];
+        if (status === 'not_found')return ['#fef9c3', '#a16207', 'fa-envelope', 'Tidak Ditemukan'];
+        if (status === 'parse_failed') return ['#ffedd5', '#c2410c', 'fa-triangle-exclamation', 'OTP Tidak Terbaca'];
+        return ['#fee2e2', '#b91c1c', 'fa-circle-xmark', 'Terjadi Kesalahan'];
+    };
 
-            if (mainForm) {
-                mainForm.addEventListener('submit', () => {
-                    setLoadingState(true);
-                });
+    const showToast = () => { toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 1300); };
+
+    const copyCode = (code) => {
+        if (!code || code === '—') return;
+        const done = () => showToast();
+        if (navigator.clipboard) navigator.clipboard.writeText(code).then(done).catch(() => fallbackCopy(code, done));
+        else fallbackCopy(code, done);
+    };
+    const fallbackCopy = (t, cb) => {
+        const ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta); cb();
+    };
+
+    const setLoading = (on) => {
+        submit.disabled = on;
+        submitIc.className = on ? 'fa-solid fa-spinner spin' : 'fa-solid fa-magnifying-glass';
+        submitTx.textContent = on ? 'Memproses…' : 'Ambil OTP';
+    };
+
+    const stopTimer = () => { if (timer) { clearInterval(timer); timer = null; } };
+
+    const startTimer = () => {
+        stopTimer(); secs = REFRESH_SECS; running = true;
+        timer = setInterval(() => {
+            if (!running) return;
+            secs--;
+            const bar = document.getElementById('otp-bar');
+            const count = document.getElementById('otp-count');
+            if (bar) bar.style.width = (secs / REFRESH_SECS * 100) + '%';
+            if (count) count.textContent = 'Segarkan ' + secs + ' dtk';
+            if (secs <= 0) { fetchOtp(lastPhone, true); }
+        }, 1000);
+    };
+
+    const render = (d) => {
+        const [bg, fg, icon, label] = chipStyle(d.status);
+        const code = d.otp_code || d.last_otp_code || '—';
+        const isFallback = !d.otp_code && d.last_otp_code;
+        const time = d.received_at || d.last_received_at || null;
+
+        resultEl.innerHTML = `
+            <div class="otp-panel">
+                <div class="otp-toprow">
+                    <span class="otp-chip" style="background:${bg};color:${fg}"><i class="fa-solid ${icon}"></i>${label}</span>
+                    ${time ? `<span class="otp-fresh"><i class="fa-solid fa-circle"></i>Diterima ${time} WITA</span>` : ''}
+                </div>
+                <div class="otp-codebox" id="otp-codebox">
+                    <p class="cap">${isFallback ? 'OTP TERAKHIR · KETUK UNTUK SALIN' : 'KODE OTP · KETUK UNTUK SALIN'}</p>
+                    <p class="code">${code}</p>
+                    <span class="hint"><i class="fa-solid fa-copy"></i>Salin kode</span>
+                </div>
+                <div class="otp-timerow">
+                    <span class="lbl"><i class="fa-solid fa-phone" style="margin-right:6px"></i>${d.phone_number || '-'}</span>
+                    <span class="val">${time ? time + ' WITA' : '—'}</span>
+                </div>
+                ${d.message ? `<p class="otp-msg">${d.message}</p>` : ''}
+                <div class="otp-refreshrow">
+                    <div class="otp-bar-track"><div id="otp-bar" class="otp-bar"></div></div>
+                    <span id="otp-count" class="otp-count">Segarkan ${REFRESH_SECS} dtk</span>
+                    <button id="otp-toggle" class="otp-toggle" aria-label="Jeda auto-refresh"><i class="fa-solid fa-pause"></i></button>
+                </div>
+            </div>`;
+
+        document.getElementById('otp-codebox').addEventListener('click', () => copyCode(code));
+        document.getElementById('otp-toggle').addEventListener('click', (e) => {
+            running = !running;
+            e.currentTarget.querySelector('i').className = 'fa-solid ' + (running ? 'fa-pause' : 'fa-play');
+            const count = document.getElementById('otp-count');
+            if (!running) count.textContent = 'Dijeda'; else secs = REFRESH_SECS;
+        });
+    };
+
+    const fetchOtp = async (phone, silent = false) => {
+        if (!phone) return;
+        lastPhone = phone;
+        errEl.style.display = 'none';
+        if (!silent) setLoading(true);
+        try {
+            const res = await fetch(cfg.url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrf },
+                body: JSON.stringify({ phone_number: phone }),
+            });
+            if (res.status === 422) {
+                const j = await res.json();
+                const msg = j.errors?.phone_number?.[0] || j.message || 'Nomor tidak valid.';
+                errEl.textContent = msg; errEl.style.display = 'block';
+                stopTimer(); return;
             }
+            if (res.status === 429) { errEl.textContent = 'Terlalu sering. Tunggu sebentar lalu coba lagi.'; errEl.style.display = 'block'; return; }
+            if (!res.ok) throw new Error('http ' + res.status);
+            const data = await res.json();
+            render(data);
+            startTimer();
+        } catch (e) {
+            errEl.textContent = 'Gagal terhubung ke server. Coba lagi.'; errEl.style.display = 'block';
+        } finally {
+            if (!silent) setLoading(false);
+        }
+    };
 
-            if (manualRefreshForm) {
-                manualRefreshForm.addEventListener('submit', () => {
-                    setLoadingState(true);
-                });
-            }
-        })();
-    </script>
+    submit.addEventListener('click', () => fetchOtp(phoneEl.value.trim()));
+    phoneEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') fetchOtp(phoneEl.value.trim()); });
 
-    @isset($result)
-        @if (!empty($result['phone_number']))
-            <script>
-                (() => {
-                    const form = document.getElementById('auto-refresh-form');
-                    const statusText = document.getElementById('auto-refresh-status');
-                    const toggleButton = document.getElementById('toggle-auto-refresh');
-                    const toggleKnob = document.getElementById('toggle-knob');
-                    const toggleOnText = document.getElementById('toggle-on-text');
-                    const toggleOffText = document.getElementById('toggle-off-text');
-
-                    if (!form || !statusText || !toggleButton) {
-                        return;
-                    }
-
-                    const STORAGE_KEY = 'otp_auto_refresh_enabled';
-                    let secondsLeft = 10;
-                    let autoRefreshEnabled = localStorage.getItem(STORAGE_KEY);
-
-                    if (autoRefreshEnabled === null) {
-                        autoRefreshEnabled = true;
-                        localStorage.setItem(STORAGE_KEY, 'true');
-                    } else {
-                        autoRefreshEnabled = autoRefreshEnabled === 'true';
-                    }
-
-                    const updateUI = () => {
-                        if (autoRefreshEnabled) {
-                            statusText.textContent = `Auto refresh dalam ${secondsLeft} detik`;
-                            toggleButton.setAttribute('aria-pressed', 'true');
-                            toggleButton.style.backgroundColor = '#7b1e1e';
-
-                            if (toggleKnob) {
-                                toggleKnob.style.transform = 'translateX(0)';
-                            }
-
-                            if (toggleOnText) {
-                                toggleOnText.style.opacity = '1';
-                                toggleOnText.style.color = '#ffffff';
-                            }
-
-                            if (toggleOffText) {
-                                toggleOffText.style.opacity = '1';
-                                toggleOffText.style.color = 'rgba(255,255,255,0.65)';
-                            }
-                        } else {
-                            statusText.textContent = 'Auto refresh dimatikan';
-                            toggleButton.setAttribute('aria-pressed', 'false');
-                            toggleButton.style.backgroundColor = '#9ca3af';
-
-                            if (toggleKnob) {
-                                toggleKnob.style.transform = 'translateX(48px)';
-                            }
-
-                            if (toggleOnText) {
-                                toggleOnText.style.opacity = '1';
-                                toggleOnText.style.color = 'rgba(255,255,255,0.65)';
-                            }
-
-                            if (toggleOffText) {
-                                toggleOffText.style.opacity = '1';
-                                toggleOffText.style.color = '#ffffff';
-                            }
-                        }
-                    };
-
-                    toggleButton.addEventListener('click', () => {
-                        autoRefreshEnabled = !autoRefreshEnabled;
-                        localStorage.setItem(STORAGE_KEY, autoRefreshEnabled ? 'true' : 'false');
-
-                        if (autoRefreshEnabled) {
-                            secondsLeft = 10;
-                        }
-
-                        updateUI();
-                    });
-
-                    updateUI();
-
-                    const interval = setInterval(() => {
-                        if (!autoRefreshEnabled) {
-                            return;
-                        }
-
-                        secondsLeft -= 1;
-                        updateUI();
-
-                        if (secondsLeft <= 0) {
-                            clearInterval(interval);
-                            form.submit();
-                        }
-                    }, 1000);
-                })();
-            </script>
-        @endif
-    @endisset
+    if (cfg.initial && cfg.initial.phone_number) { render(cfg.initial); lastPhone = cfg.initial.phone_number; startTimer(); }
+})();
+</script>
 @endsection
